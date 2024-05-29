@@ -70,6 +70,9 @@ Yes. Two ways:
 
 == Changelog ==
 
+= 1.0.0 =
+* Updated project name to SEO-Auto-Linker-Reborn
+
 = 0.9.1 =
 * Fixes a bug that caused the sitewide blacklist to not save
 * Add a css class to links (`auto-link`).
