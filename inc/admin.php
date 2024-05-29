@@ -102,7 +102,7 @@ class SEO_Auto_Linker_Admin extends SEO_Auto_Linker_Base
     }
 
     /*
-     * Menu page callback.  Handles outputing our options page
+     * Menu page callback.  Handles outputting our options page
      */
     public static function menu_page_cb()
     {
@@ -135,4 +135,48 @@ class SEO_Auto_Linker_Admin extends SEO_Auto_Linker_Base
         _e('The URLs on your site where you do not want any automatic links to' .
             ' appear.  One URL per line.', 'seoal');
         echo '</p>';
-    
+    }
+
+    /*
+     * Callback for the blacklist field
+     *
+     * @since 0.7
+     */
+    public static function blacklist_field()
+    {
+        $options = get_option(self::SETTING);
+        ?>
+        <textarea id="seoal-blacklist-field" name="<?php echo self::SETTING; ?>[blacklist]" rows="10" cols="50" class="large-text"><?php echo isset($options['blacklist']) ? esc_textarea(implode("\n", $options['blacklist'])) : ''; ?></textarea>
+        <?php
+    }
+
+    /*
+     * Callback for the word boundary section
+     *
+     * @since 0.7
+     */
+    public static function boundary_section()
+    {
+        echo '<p class="description">';
+        _e('Whether or not to use alternative word boundaries when determining' .
+            ' what makes up a word for the purposes of auto linking.', 'seoal');
+        echo '</p>';
+    }
+
+    /*
+     * Callback for the word boundary field
+     *
+     * @since 0.7
+     */
+    public static function boundary_field()
+    {
+        $options = get_option(self::SETTING);
+        ?>
+        <label for="seoal-boundary-field">
+            <input type="checkbox" id="seoal-boundary-field" name="<?php echo self::SETTING; ?>[word_boundary]" <?php checked(isset($options['word_boundary']) ? $options['word_boundary'] : 'off', 'on'); ?> />
+            <?php _e('Yes', 'seoal'); ?>
+        </label>
+        <?php
+    }
+}
+?>
