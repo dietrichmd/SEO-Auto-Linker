@@ -28,45 +28,23 @@ Domain Path: /lang
 define('SEOAL_PATH', plugin_dir_path(__FILE__));
 define('SEOAL_URL', plugin_dir_url(__FILE__));
 
-require_once(SEOAL_PATH . 'inc/base.php');
-require_once(SEOAL_PATH . 'inc/post-type.php');
-if(is_admin())
-{
-    require_once(SEOAL_PATH . 'inc/admin.php');
-}
-else
-{
-    require_once(SEOAL_PATH . 'inc/front.php');
-}
+require_once SEOAL_PATH . 'inc/base.php';
+require_once SEOAL_PATH . 'inc/post-type.php';
 
+if (is_admin()) {
+  require_once SEOAL_PATH . 'inc/admin.php';
+} else {
+  require_once SEOAL_PATH . 'inc/front.php';
+}
 
 add_action('init', 'seoal_load_textdomain');
-/*
- * Loads the plugin's text domain for translation
- *
- * @uses load_plugin_textdomain
- * @since 0.7
- */
-function seoal_load_textdomain()
-{
-    load_plugin_textdomain(
-        'seoal',
-        false,
-        dirname(plugin_basename(__FILE__)) . '/lang/'
-    );
+
+function seoal_load_textdomain() {
+  load_plugin_textdomain('seoal', false, dirname(plugin_basename(__FILE__)) . '/lang/');
 }
 
-
 add_action('plugins_loaded', 'seoal_loaded');
-/**
- * Provides an always safe action into which to hook for plugins that extend
- * SEO Auto Linker.
- *
- * @since   0.8.2
- * @uses    do_action
- * @return  null
- */
-function seoal_loaded()
-{
-    do_action('seoal_loaded');
+
+function seoal_loaded() {
+  do_action('seoal_loaded');
 }
