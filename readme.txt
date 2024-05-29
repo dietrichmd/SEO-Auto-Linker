@@ -72,6 +72,7 @@ Yes. Two ways:
 
 = 1.0.0 =
 * Updated project name to SEO-Auto-Linker-Reborn
+* Updated code to be compatible with WordPress 6.X
 
 = 0.9.1 =
 * Fixes a bug that caused the sitewide blacklist to not save
