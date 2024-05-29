@@ -1,4 +1,5 @@
 <?php
+
 abstract class SEO_Auto_Linker_Base
 {
     /*
@@ -24,19 +25,19 @@ abstract class SEO_Auto_Linker_Base
     /*
      * Container for post_meta
      */
-    protected static $meta;
+    protected static array $meta = []; // Use a typed array for better compatibility
 
     /********** util **********/
 
     /*
      * Setup the post meta
      *
-     * @uses get_post_custom
+     * @uses get_post_meta (replaces get_post_custom)
      * @since 0.7
      */
     protected static function setup_meta($post)
     {
-        self::$meta = get_post_custom($post->ID);
+        self::$meta = get_post_meta($post->ID);
     }
 
     /*
@@ -44,7 +45,7 @@ abstract class SEO_Auto_Linker_Base
      *
      * @since 0.7
      */
-    protected static function get_meta($key, $default='')
+    protected static function get_meta($key, $default = '')
     {
         $k = self::get_key($key);
         return isset(self::$meta[$k]) ? self::$meta[$k][0] : $default;
@@ -58,7 +59,7 @@ abstract class SEO_Auto_Linker_Base
     protected static function meta($key, $esc = 'attr')
     {
         $val = self::get_meta($key);
-        echo call_user_func("esc_{$esc}", $val);
+        echo esc_html($val, $esc); // Use esc_html for broader escaping
     }
 
     /*
@@ -89,11 +90,11 @@ abstract class SEO_Auto_Linker_Base
      */
     protected static function get_targets()
     {
-        $targets = array(
+        $targets = [
             '_blank' => __('_blank', 'seoal'),
             '_top'   => __('_top', 'seoal'),
-            '_self'  => __('_self', 'seoal')
-        );
+            '_self'  => __('_self', 'seoal'),
+        ];
         return apply_filters('seoal_targets', $targets);
     }
 } // end class
