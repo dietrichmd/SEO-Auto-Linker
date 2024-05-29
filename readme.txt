@@ -1,16 +1,16 @@
-=== SEO Auto Linker ===
-Contributors: chrisguitarguy, agencypmg
-Donate link: http://www.pwsausa.org/give.htm
+=== SEO Auto Linker Reborn ===
+Contributors: dietrichmd, based on work by chrisguitarguy, agencypmg
+Donate link: https://paypal.me/vestrainteractive
 Tags: seo, links, internal links, automatic linking
-Requires at least: 3.2
-Tested up to: 3.5.1
+Requires at least: 6.0
+Tested up to: 6.5.3
 Stable tag: 0.9.1
 
 SEO Auto Linker allows you to automagically add links into your content. Great for internal linking!
 
 == Description ==
 
-SEO Auto Linker is an update to the much loved [SEO Smart Links](http://wordpress.org/extend/plugins/seo-automatic-links/ "SEO Smart Links") plugin.
+SEO Auto Linker Reborn is an update to SEO Auto Linker, which itself is an update to the much loved [SEO Smart Links](http://wordpress.org/extend/plugins/seo-automatic-links/ "SEO Smart Links") plugin.
 
 The plugin automatically links words and phrases in your post, page or custom post type content.
 
