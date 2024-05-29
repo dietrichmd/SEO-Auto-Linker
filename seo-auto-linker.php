@@ -3,7 +3,7 @@
 Plugin Name: SEO Auto Linker Reborn
 Plugin URI: 
 Description: Allows you to automatically link terms with in your post, page or custom post type content.  Based on SEO Auto Linker by Christopher Davis (http://christopherdavis.me)
-Version: 0.1.0
+Version: 1.0.0
 Author: Vestra Interactive
 Author URI: http://vestrainteractive.com
 Text Domain: seoal
