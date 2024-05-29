@@ -42,25 +42,27 @@ class SEO_Auto_Linker_Front extends SEO_Auto_Linker_Base
         self::$hash = md5('seo-auto-linker');
         add_filter(
             'the_content',
-            array(get_class(), 'content'),
+            array(__CLASS__, 'content'),
             1
         );
     }
 
     /*
-     * Main event.  Filters the conntent to add links
+     * Main event. Filters the content to add links
      *
      * @since 0.7
      */
     public static function content($content)
     {
         global $post;
-        if(!self::allowed($post))
+        if (!self::allowed($post)) {
             return $content;
+        }
 
         self::setup_links($post);
-        if(!self::$links)
+        if (!self::$links) {
             return $content;
+        }
 
         $header_replacements = array();
         $link_replacements = array();
@@ -69,30 +71,25 @@ class SEO_Auto_Linker_Front extends SEO_Auto_Linker_Base
         $filtered = $content;
 
         preg_match_all('/' . get_shortcode_regex() . '/', $filtered, $scodes);
-        if(!empty($scodes[0]))
-        {
+        if (!empty($scodes[0])) {
             $shortcode_replacements = self::gen_replacements($scodes[0], 'shortcode');
             $filtered = self::replace($shortcode_replacements, $filtered);
         }
 
         preg_match_all('/<h[1-6][^>]*>.+?<\/h[1-6]>/iu', $filtered, $headers);
-        if(!empty($headers[0]))
-        {
+        if (!empty($headers[0])) {
             $header_replacements = self::gen_replacements($headers[0], 'header');
             $filtered = self::replace($header_replacements, $filtered);
         }
 
-        preg_match_all('/<(img|input)(.*?) \/?>/iu', $filtered, $others);
-        if(!empty($others[0]))
-        {
+        preg_match_all('/<(img|input)(.*?) \/>/iu', $filtered, $others);
+        if (!empty($others[0])) {
             $other_replacements = self::gen_replacements($others[0], 'others');
             $filtered = self::replace($other_replacements, $filtered);
         }
 
-        foreach(self::$links as $count => $l)
-        {
-            if(apply_filters('seoal_should_continue', false, $l, $count))
-            {
+        foreach (self::$links as $count => $l) {
+            if (apply_filters('seoal_should_continue', false, $l, $count)) {
                 continue;
             }
 
@@ -101,8 +98,7 @@ class SEO_Auto_Linker_Front extends SEO_Auto_Linker_Base
                 $filtered,
                 $links
             );
-            if(!empty($links[0]))
-            {
+            if (!empty($links[0])) {
                 $start = count($link_replacements);
                 $tmp = self::gen_replacements($links[0], 'links', $start);
                 $filtered = self::replace($tmp, $filtered);
@@ -116,7 +112,7 @@ class SEO_Auto_Linker_Front extends SEO_Auto_Linker_Base
             $url = self::get_link_url($l);
             $max = self::get_link_max($l);
 
-            if(
+            if (
                 !$regex || !$url || !$max ||
                 ($url == self::$permalink && !self::self_links_allowed($l))
             ) continue;
@@ -150,27 +146,27 @@ class SEO_Auto_Linker_Front extends SEO_Auto_Linker_Base
     }
 
     /*
-     * Determins whether or not a post can be editted
+     * Determines whether or not a post can be edited
      */
     protected static function allowed($post)
     {
         $rv = true;
 
-        if(
+        if (
             (!is_singular() && apply_filters('seoal_only_single', true)) ||
             !in_the_loop()
         ) $rv = false;
 
-        if(strpos($post->post_content, '<!--nolinks-->') !== false)
+        if (strpos($post->post_content, '<!--nolinks-->') !== false)
             $rv = false;
 
         self::$opts = get_option(self::SETTING, array());
-        if(!isset(self::$opts['blacklist']))
+        if (!isset(self::$opts['blacklist']))
             self::$opts['blacklist'] = array();
 
         self::$permalink = get_permalink($post);
 
-        if(in_array(self::$permalink, self::$opts['blacklist']))
+        if (in_array(self::$permalink, self::$opts['blacklist']))
             $rv = false;
 
         return apply_filters('seoal_allowed', $rv, $post);
@@ -183,10 +179,8 @@ class SEO_Auto_Linker_Front extends SEO_Auto_Linker_Base
      */
     protected static function setup_links($post)
     {
-
         $links = apply_filters('pre_seoal_links', false, $post);
-        if(false !== $links)
-        {
+        if (false !== $links) {
             self::$links = $links;
             return;
         }
@@ -203,23 +197,21 @@ class SEO_Auto_Linker_Front extends SEO_Auto_Linker_Base
                 ),
                 array(
                     'key'     => self::get_key('url'),
-                    'compare' => 'EXISTS' // doesn't do anything, just a reminder
+                    'compare' => 'EXISTS'
                 ),
                 array(
                     'key'     => self::get_key('keywords'),
-                    'compare' => 'EXISTS' // doesn't do anything, just a reminder
+                    'compare' => 'EXISTS'
                 )
             ),
             'suppress_filters' => false,
         ));
 
         $rv = array();
-        if($links)
-        {
-            foreach($links as $l)
-            {
+        if ($links) {
+            foreach ($links as $l) {
                 $blacklist = self::get_meta($l, 'blacklist');
-                if(!$blacklist || !in_array(self::$permalink, (array)$blacklist))
+                if (!$blacklist || !in_array(self::$permalink, (array)$blacklist))
                     $rv[] = $l;
             }
         }
@@ -234,7 +226,7 @@ class SEO_Auto_Linker_Front extends SEO_Auto_Linker_Base
     protected static function get_kw_regex($link)
     {
         $keywords = self::get_keywords($link);
-        if(!$keywords)
+        if (!$keywords)
             return false;
 
         list($ob, $cb) = self::get_boundaries($link);
@@ -248,7 +240,7 @@ class SEO_Auto_Linker_Front extends SEO_Auto_Linker_Base
     }
 
     /*
-     * fetch the clean and sanitied keywords
+     * Fetch the clean and sanitized keywords
      *
      * @since 0.7
      */
@@ -259,9 +251,7 @@ class SEO_Auto_Linker_Front extends SEO_Auto_Linker_Base
         $kw_arr = apply_filters('seoal_link_keywords', $kw_arr, $link);
         $kw_arr = array_map('trim', (array)$kw_arr);
         $kw_out = array();
-        foreach($kw_arr as $kw)
-        {
-            // Second argument of `preg_quote`? Does not default to `/`
+        foreach ($kw_arr as $kw) {
             $kw_out[] = preg_quote($kw, '/');
         }
         return $kw_out;
@@ -279,7 +269,7 @@ class SEO_Auto_Linker_Front extends SEO_Auto_Linker_Base
     }
 
     /*
-     * Get the maximum number of time a link can be replaced
+     * Get the maximum number of times a link can be replaced
      *
      * @since 0.7
      */
@@ -294,14 +284,13 @@ class SEO_Auto_Linker_Front extends SEO_Auto_Linker_Base
      * Get the target attribute for a given link
      *
      * @since 0.7.2
-     * @return string The escaped target att
+     * @return string The escaped target attribute
      */
     protected static function get_link_target($link)
     {
         $target = self::get_meta($link, 'target');
         $target = apply_filters('seoal_link_target', $target, $link);
-        if(!in_array($target, array_keys(self::get_targets())))
-        {
+        if (!in_array($target, array_keys(self::get_targets()))) {
             $target = '_self';
         }
         return esc_attr($target);
@@ -324,7 +313,7 @@ class SEO_Auto_Linker_Front extends SEO_Auto_Linker_Base
     }
 
     /**
-     * check whether or not a link is nofollowed.
+     * Check whether or not a link is nofollowed.
      *
      * @since   0.85
      * @access  protected
@@ -347,36 +336,28 @@ class SEO_Auto_Linker_Front extends SEO_Auto_Linker_Base
     protected static function get_meta($post, $key)
     {
         $res = apply_filters('seoal_pre_get_meta', false, $key, $post);
-        if($res !== false)
-        {
+        if ($res !== false) {
             return $res;
         }
-        if(isset($post->ID))
-        {
+        if (isset($post->ID)) {
             $res = get_post_meta($post->ID, self::get_key($key), true);
-        }
-        else
-        {
+        } else {
             $res = '';
         }
         return $res;
     }
 
     /*
-     * Loop through a an array of matches and create an associative array of 
-     * key value pairs to use for str replacements
-     *
-     * @todo Look into just hashing the entire array key with md5 or
-     * something.  Might help avoid conflicts?
+     * Loop through an array of matches and create an associative array of 
+     * key-value pairs to use for str replacements
      *
      * @since 0.7
      */
-    protected function gen_replacements($arr, $key, $start=0)
+    protected static function gen_replacements($arr, $key, $start=0)
     {
         $rv = array();
         $h = self::$hash;
-        foreach($arr as $a)
-        {
+        foreach ($arr as $a) {
             $rv["<!--{$h}-{$key}-{$start}-->"] = $a;
             $start++;
         }
@@ -411,7 +392,6 @@ class SEO_Auto_Linker_Front extends SEO_Auto_Linker_Base
      *
      * @since   0.9
      * @access  protected
-     * @uses    get_option
      * @return  array
      */
     public static function get_boundaries($link)
@@ -420,17 +400,13 @@ class SEO_Auto_Linker_Front extends SEO_Auto_Linker_Base
 
         $alt_b = isset($opts['word_boundary']) && 'on' == $opts['word_boundary'];
 
-        if(apply_filters('seoal_unicode_boundaries', $alt_b, $link))
-        {
+        if (apply_filters('seoal_unicode_boundaries', $alt_b, $link)) {
             $ob = '(?<!\pL)'; // Negative look behind (anything that isn't a unicode letter)
             $cb = '(?!\pL)'; // Negative look ahead (anything that isn't a unicode letter)
-        }
-        else
-        {
+        } else {
             $ob = $cb = '\b';
         }
 
-        // Don't change these unless you know what you're doing. Really.
         $ob = apply_filters('seoal_opening_word_boundary', $ob, $link);
         $cb = apply_filters('seoal_closing_word_boundary', $cb, $link);
 
